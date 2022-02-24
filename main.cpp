@@ -11,23 +11,14 @@ int main(int argc, char** argv) {
     //initialize seed for rand function
     srand(time(NULL));
 
-    //start ncurses
-    initscr();
-
-    //set some default ncurses settings
-    nodelay(stdscr, true);
-    curs_set(false);
-    keypad(stdscr, true);
-    noecho();
-    cbreak();
+	initGameScreen();
 
     //default values for starting the game
     bool continueGame = true;
     char c = 'l';
     int direction = NORTH;
 
-    //set the delay between loops based on game speed
-    int interval = 1000/GAME_SPEED;
+	//delay in the north-south directions, not in east-west
     int delay[4] = {NS_DELAY, NS_DELAY, 0, 0};
 
     //get max x and y to find middle of screen
@@ -55,29 +46,34 @@ int main(int argc, char** argv) {
 
 	//game loop
     do {
-
         //draw the apple
         drawDot(apple);
+
         //draw the border
         box(stdscr, '|', '-');
+
         //draw score
         move(0,2);
         printw("Score: %d", score);
+
         //refresh the screen
         refresh();
 
-        //delay between loops
-        //adjust for north-south being too fast
-        std::this_thread::sleep_for(std::chrono::milliseconds(interval+delay[direction]));
+        //delay between game loops (how fast the snake moves)
+        std::this_thread::sleep_for(std::chrono::milliseconds(INTERVAL+delay[direction]));
 
         //change direction based on input, nodelay(), stops the blocking
         changeDirection(getch(), direction);
 
         //check for apple hit
         if(snakeQ.back().x == apple.x && snakeQ.back().y == apple.y){
+
+			//iterate score
             score++;
+
             //get new dot to be head
             dot newDot;
+			//pupt new head dot at current head
             newDot.y = snakeQ.back().y;
             newDot.x = snakeQ.back().x;
             newDot.icon = SNAKE_PIECE;
@@ -89,19 +85,30 @@ int main(int argc, char** argv) {
             drawSnake(snakeQ);
             //move the apple somewhere else
             moveApple(apple, y, x);
+			//don't let the apple spawn in the snake
+			while(mvinch(apple.y,apple.x) == SNAKE_PIECE)
+				moveApple(apple,y,x);
         }
         else {
-            //move to the tail of the snake
-            move(snakeQ.front().y, snakeQ.front().x);
-            //clear the tail space
-            addch(' ');
             //create the new head dot
             dot newDot;
+			//put new head dot at current head
             newDot.y = snakeQ.back().y;
             newDot.x = snakeQ.back().x;
             newDot.icon = SNAKE_PIECE;
-            //move the head in the current direction
+            //move the new head in the right direction
             moveDot(direction, newDot);
+			//if snake head is moving to a place in which a snake piece already exists
+			if (mvinch(newDot.y, newDot.x) == SNAKE_PIECE){
+				continueGame = false;
+				continue;
+			}
+
+			//move to the tail of the snake
+            move(snakeQ.front().y, snakeQ.front().x);
+            //clear the tail space
+            addch(' ');
+
             //push the new head dot to the queue
             snakeQ.push(newDot);
             //pop the tail dot

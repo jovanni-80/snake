@@ -5,10 +5,14 @@
 #define EAST 2
 #define WEST 3
 
+#define MAX_BOARD_SIZE 50
+
 //game speed (updates per second)
 #define GAME_SPEED 15
 //north south delay, because north south moves faster due to characters not being square
 #define NS_DELAY 30
+//interval of time between each game loop
+#define INTERVAL 1000/GAME_SPEED
 
 //snake piece char and apple char
 #define SNAKE_PIECE 'O'
@@ -20,6 +24,20 @@ struct dot {
         int x;
         char icon;
 };
+
+void initGameScreen() {
+
+    //start ncurses
+    initscr();
+
+    //set some default ncurses settings
+    nodelay(stdscr, true);
+    curs_set(false);
+    keypad(stdscr, true);
+    noecho();
+    cbreak();
+
+}
 
 //alters the direction variable based on the keyboard input given
 void changeDirection(wchar_t c, int& direction) {

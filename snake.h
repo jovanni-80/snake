@@ -25,6 +25,7 @@ struct dot {
         char icon;
 };
 
+//get the ncurses options set, and initialize the screen
 void initGameScreen() {
 
     //start ncurses

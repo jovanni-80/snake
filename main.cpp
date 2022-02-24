@@ -11,6 +11,7 @@ int main(int argc, char** argv) {
     //initialize seed for rand function
     srand(time(NULL));
 
+	//set all of the ncurses stuff
 	initGameScreen();
 
     //default values for starting the game

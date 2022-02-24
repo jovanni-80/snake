@@ -2,11 +2,11 @@
 A C++ snake game using the curses library. This is a personal project used as a way to get more familiar and have some fun with the curses library.
 
 ### To-Do:
-- [x] Have the snake move
-- [x] Have the snake and apple collide
-- [x] Draw borders
-- [x] keep track of score
-- [x] snake on snake collision
+- [x] ~~Have the snake move~~
+- [x] ~~Have the snake and apple collide~~
+- [x] ~~Draw borders~~
+- [x] ~~keep track of score~~
+- [x] ~~snake on snake collision~~
 - [ ] get rid of redundant code
 - [ ] Potentially Organize into objects
 - [ ] implement a maximum window size

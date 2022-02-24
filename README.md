@@ -1,14 +1,14 @@
 # NCSnake
 A C++ snake game using the ncurses library.
 ### To-Do
-[x] Have the snake move
-[x] Have the snake and apple collide
-[x] Draw borders
-[x] keep track of score
-[ ] implement a maximum window size
-[ ] implemnet a main menu screen
-[ ] implement a game window
-[ ] snake on snake collision
+- [x] Have the snake move
+- [x] Have the snake and apple collide
+- [x] Draw borders
+- [x] keep track of score
+- [ ] implement a maximum window size
+- [ ] implemnet a main menu screen
+- [ ] implement a game window
+- [ ] snake on snake collision
 
 ### Dependencies
 The ncurses library.

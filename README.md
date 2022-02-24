@@ -1,4 +1,4 @@
-# SnakeCurse
+# NCSnake
 A C++ snake game using the ncurses library.
 ### Dependencies
 The ncurses library.

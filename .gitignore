@@ -1,3 +1,3 @@
-snakeGame
+ncsnake
 *.o
-backup*
+backupMain.cpp

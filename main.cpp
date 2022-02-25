@@ -8,7 +8,7 @@
 
 int main(int argc, char** argv) {
 
-    //initialize seed for rand function
+    //initialize seed for random function
     srand(time(NULL));
 
 	//set all of the ncurses stuff

@@ -1,2 +1,2 @@
 bin/ncsnake
-src/*.o
+*.o

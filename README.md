@@ -1,18 +1,18 @@
 # NCSnake
-A C++ snake game using the curses library. This is a personal project used as a way to get more familiar and have some fun with the curses library.
+A C++ snake game using the curses library. This is a personal project used as a way to get more familiar and have some fun with ncurses.
 
 ### To-Do:
+- [ ] Potentially Organize into objects
+- [ ] implement a maximum window size
+- [ ] implemnet a main menu screen
+- [ ] implement a game window
 - [x] ~~Have the snake move~~
 - [x] ~~Have the snake and apple collide~~
 - [x] ~~Draw borders~~
 - [x] ~~keep track of score~~
 - [x] ~~snake on snake collision~~
-- [ ] get rid of redundant code
-- [ ] Potentially Organize into objects
-- [ ] implement a maximum window size
-- [ ] implemnet a main menu screen
-- [ ] implement a game over screen
-- [ ] implement a game window
+- [x] get rid of redundant code
+- [x] implement a game over screen
 
 ### Dependencies
 The ncurses library.

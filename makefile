@@ -1,8 +1,8 @@
 ncsnake: main.o
-	g++ main.o -o ncsnake -lncurses
+	g++ main.o -o bin/ncsnake -lncurses
 
-main.o: main.cpp snake.h
-	g++ -c main.cpp
+main.o: src/main.cpp src/snake.h
+	g++ -c src/main.cpp
 
 clean:
 	rm *.o

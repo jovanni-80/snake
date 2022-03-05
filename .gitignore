@@ -1,3 +1,2 @@
-ncsnake
-*.o
-backupMain.cpp
+bin/ncsnake
+src/*.o

@@ -11,8 +11,8 @@ A C++ snake game using the curses library. This is a personal project used as a 
 - [x] ~~Draw borders~~
 - [x] ~~keep track of score~~
 - [x] ~~snake on snake collision~~
-- [x] get rid of redundant code
-- [x] implement a game over screen
+- [x] ~~get rid of redundant code~~
+- [x] ~~implement a game over screen~~
 
 ### Dependencies
 The ncurses library.

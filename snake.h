@@ -28,6 +28,9 @@ struct dot {
 //get the ncurses options set, and initialize the screen
 void initGameScreen() {
 
+    //clear any previous screen
+    clear();
+
     //start ncurses
     initscr();
 
@@ -40,8 +43,19 @@ void initGameScreen() {
 
 }
 
+void initGameVars(bool &continueRound, char &c, int &score, int &direction, int &selected, int &y, int &x, WINDOW *win) {
+    //default values for blank game
+    continueRound = true;
+    c = 'l';
+    direction = NORTH;
+    selected = 0;
+    getmaxyx(win, y, x);
+    score = 0;
+}
+
 //alters the direction variable based on the keyboard input given
 void changeDirection(wchar_t c, int& direction) {
+    //change direction based on c
     switch(c) {
         case KEY_LEFT:
             direction = WEST;

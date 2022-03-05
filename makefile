@@ -1,5 +1,5 @@
 ncsnake: main.o
-	g++ main.o -o bin/ncsnake -lncurses
+	g++ main.o -o ncsnake -lncurses
 
 main.o: src/main.cpp src/snake.h
 	g++ -c src/main.cpp

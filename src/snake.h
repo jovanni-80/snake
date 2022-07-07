@@ -1,4 +1,6 @@
 #include <queue>
+#include <ncurses.h>
+#include <stdlib.h>
 
 #define NORTH 0
 #define SOUTH 1
@@ -10,7 +12,7 @@
 //game speed (updates per second)
 #define GAME_SPEED 15
 //north south delay, because north south moves faster due to characters not being square
-#define NS_DELAY 30
+#define NS_DELAY 40
 //interval of time between each game loop
 #define INTERVAL 1000/GAME_SPEED
 
@@ -20,107 +22,24 @@
 
 //dot structure
 struct dot {
-        int y;
-        int x;
-        char icon;
+  int y;
+  int x;
+  char icon;
 };
 
-//get the ncurses options set, and initialize the screen
-void initGameScreen() {
+void initGameScreen();
 
-    //clear any previous screen
-    clear();
+void initGameVars(bool &continueRound, char &c, int &score,
+    int &direction, int &selected, int &y, int &x, WINDOW *win);
 
-    //start ncurses
-    initscr();
+void changeDirection(wchar_t c, int& direction);
 
-    //set some default ncurses settings
-    nodelay(stdscr, true);
-    curs_set(false);
-    keypad(stdscr, true);
-    noecho();
-    cbreak();
+void moveDot(int direction, dot& d);
 
-}
+void drawDot(dot d);
 
-void initGameVars(bool &continueRound, char &c, int &score, int &direction, int &selected, int &y, int &x, WINDOW *win) {
-    //default values for blank game
-    continueRound = true;
-    c = 'l';
-    direction = NORTH;
-    selected = 0;
-    getmaxyx(win, y, x);
-    score = 0;
-}
+void drawSnake(std::queue<dot> snkQ);
 
-//alters the direction variable based on the keyboard input given
-void changeDirection(wchar_t c, int& direction) {
-    //change direction based on c
-    switch(c) {
-        case KEY_LEFT:
-            direction = WEST;
-            break;
-        case KEY_DOWN:
-            direction = SOUTH;
-            break;
-        case KEY_RIGHT:
-            direction = EAST;
-            break;
-        case KEY_UP:
-            direction = NORTH;
-            break;
-        default:
-            break;
-    }
-}
+bool inBounds(dot d, int maxY, int maxX);
 
-//updates the dot's coordinates based on it's direction
-void moveDot(int direction, dot& d) {
-    int arr[] = {-1, 1, 1, -1};
-
-    //directions which alter y val
-    if (direction == NORTH || direction == SOUTH) {
-        d.y+=arr[direction];
-    }
-    else if (direction == WEST || direction == EAST) {
-        d.x+=arr[direction];
-    }
-}
-
-//clear and draw dot on the screen after moving it
-void drawDot(dot d) {
-
-    //move the snake to the new direction
-    move(d.y, d.x);
-    //draw the thing
-    addch(d.icon);
-}
-
-//draw the entire snake current workaround for eating the apple
-void drawSnake(std::queue<dot> snkQ) {
-    std::queue<dot> temp = snkQ;
-
-    while(!temp.empty()) {
-        drawDot(temp.front());
-        temp.pop();
-    }
-
-}
-
-//return true if dot is inbounds, false otherwise
-bool inBounds(dot d, int maxY, int maxX) {
-    bool ret = true;
-
-    if (d.y < 1 || d.y > maxY-2)
-        ret = false;
-    else if (d.x < 1 || d.x > maxX-2)
-        ret = false;
-
-    return ret;
-}
-
-//move the apple to a random location
-void moveApple(dot &a, int maxY, int maxX) {
-    a.x = rand()%(maxX-2)+1;
-    a.y = rand()%(maxY-2)+1;
-}
+void moveApple(dot &a, int maxY, int maxX);

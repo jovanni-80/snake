@@ -2,10 +2,10 @@
 A C++ snake game using the curses library. This is a personal project used as a way to get more familiar and have some fun with ncurses.
 
 ### To-Do:
-- [ ] Potentially Organize into objects
 - [ ] implement a maximum window size
 - [ ] implemnet a main menu screen
 - [ ] implement a game window
+- [ ] color feedback?
 - [x] ~~Have the snake move~~
 - [x] ~~Have the snake and apple collide~~
 - [x] ~~Draw borders~~

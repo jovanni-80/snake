@@ -55,15 +55,27 @@ void changeDirection(wchar_t c, int& direction) {
 }
 
 //updates the dot's coordinates based on it's direction
-void moveDot(int direction, dot& d) {
+void moveDot(int direction, dot& d, int x, int y) {
     int arr[] = {-1, 1, 1, -1};
 
     //directions which alter y val
     if (direction == NORTH || direction == SOUTH) {
-        d.y+=arr[direction];
+        d.y += arr[direction];
+        if (d.y < 1) {
+            d.y = y-2;
+        }
+        else if (d.y > y-2) {
+            d.y = 1;
+        }
     }
     else if (direction == WEST || direction == EAST) {
-        d.x+=arr[direction];
+        d.x += arr[direction];
+        if (d.x < 1) {
+            d.x = x-2;
+        }
+        else if (d.x > x-2) {
+            d.x = 1;
+        }
     }
 }
 

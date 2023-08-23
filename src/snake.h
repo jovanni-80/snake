@@ -34,7 +34,7 @@ void initGameVars(bool &continueRound, char &c, int &score,
 
 void changeDirection(wchar_t c, int& direction);
 
-void moveDot(int direction, dot& d);
+void moveDot(int direction, dot& d, int x, int y);
 
 void drawDot(dot d);
 

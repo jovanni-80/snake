@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
                 newDot.icon = SNAKE_PIECE;
 
                 // move new head in the right direction
-                moveDot(direction, newDot);
+                moveDot(direction, newDot, x, y);
 
                 // push the new head into the queue
                 snakeQ.push(newDot);
@@ -114,7 +114,10 @@ int main(int argc, char** argv) {
             }
             else {
                 // create the new head dot
-                dot newDot;
+                dot newDot, prevDot;
+
+                prevDot.y = snakeQ.back().y;
+                prevDot.x = snakeQ.back().x;
 
                 // put new head dot at current head
                 newDot.y = snakeQ.back().y;
@@ -122,10 +125,14 @@ int main(int argc, char** argv) {
                 newDot.icon = SNAKE_PIECE;
 
                 // move the new head in the right direction
-                moveDot(direction, newDot);
+                moveDot(direction, newDot, x,  y);
 
                 // if snake head is moving to a place in which a snake piece already exists
-                if (mvinch(newDot.y, newDot.x) == SNAKE_PIECE){
+                if (newDot.x == prevDot.x && newDot.y == prevDot.y){
+                    continueRound = false;
+                    continue;
+                }
+                else if (mvinch(newDot.y, newDot.x) == SNAKE_PIECE){
                     continueRound = false;
                     continue;
                 }
@@ -148,7 +155,7 @@ int main(int argc, char** argv) {
             }
 
             // if out of bounds, end game
-            continueRound = inBounds(snakeQ.back(),y,x);
+            // continueRound = inBounds(snakeQ.back(),y,x);
 
         } while (continueRound);
 
@@ -221,10 +228,10 @@ int main(int argc, char** argv) {
         } while (gameOverLoop);
 
         // end window after game is over
-        endwin();
 
     } while(playGame == 0);
 
+    endwin();
 
     return 0;
 }

@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
                 // push the new head into the queue
                 snakeQ.push(newDot);
 
-                // draw the new snake piece
+                // draw the new snake
                 drawSnake(snakeQ);
 
                 // move the apple somewhere else

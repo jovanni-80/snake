@@ -10,7 +10,7 @@
 #define MAX_BOARD_SIZE 50
 
 //game speed (updates per second)
-#define GAME_SPEED 15
+#define GAME_SPEED 20
 //north south delay, because north south moves faster due to characters not being square
 #define NS_DELAY 40
 //interval of time between each game loop

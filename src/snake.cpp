@@ -9,7 +9,7 @@ void initGameScreen() {
     //start ncurses
     initscr();
 
-    //set some default ncurses settings
+    //set some ncurses settings
     nodelay(stdscr, true);
     curs_set(false);
     keypad(stdscr, true);
@@ -26,6 +26,10 @@ void initGameVars(bool &continueRound, char &c, int &score,
     direction = NORTH;
     selected = 0;
     getmaxyx(win, y, x);
+    x = std::min(x, 100);
+    y = std::min(y, 100);
+    clear();
+    resizeterm(y, x);
     score = 0;
 }
 

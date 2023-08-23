@@ -155,7 +155,6 @@ int main(int argc, char** argv) {
             }
 
             // if out of bounds, end game
-            // continueRound = inBounds(snakeQ.back(),y,x);
 
         } while (continueRound);
 

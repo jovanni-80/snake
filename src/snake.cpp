@@ -99,18 +99,6 @@ void drawSnake(std::queue<dot> snkQ) {
 
 }
 
-//return true if dot is inbounds, false otherwise
-bool inBounds(dot d, int maxY, int maxX) {
-    bool ret = true;
-
-    if (d.y < 1 || d.y > maxY-2)
-        ret = false;
-    else if (d.x < 1 || d.x > maxX-2)
-        ret = false;
-
-    return ret;
-}
-
 //move the apple to a random location
 void moveApple(dot &a, int maxY, int maxX) {
     a.x = rand()%(maxX-2)+1;

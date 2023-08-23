@@ -40,6 +40,4 @@ void drawDot(dot d);
 
 void drawSnake(std::queue<dot> snkQ);
 
-bool inBounds(dot d, int maxY, int maxX);
-
 void moveApple(dot &a, int maxY, int maxX);

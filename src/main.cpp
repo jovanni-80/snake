@@ -3,234 +3,280 @@
 //
 // By: Jovanni Rodriguez
 
+#include "snake.h"
+#include <chrono>
 #include <ncurses.h>
 #include <stdlib.h>
-#include <time.h>
-#include <chrono>
 #include <thread>
+#include <time.h>
 #include <unistd.h>
-#include "snake.h"
 
+int main(int argc, char **argv) {
 
-int main(int argc, char** argv) {
+  // initialize seed for random function
+  srand(time(NULL));
 
-    // initialize seed for random function
-    srand(time(NULL));
+  // delay values (slowr in north-south beacuse of character height)
+  int delay[4] = {NS_DELAY, NS_DELAY, 0, 0};
 
-    // delay values (slowr in north-south beacuse of character height)
-    int delay[4] = {NS_DELAY, NS_DELAY, 0, 0};
+  // creating variables before the game loop
+  bool continueRound;                // player hasn't lost current round
+  char c;                            // input char?
+  int playGame = 0,                  // play again
+      direction,                     // direction the snake is headed in
+      score,                         // score of the current round
+      selected,                      // selected option at end screen (yes/no)
+      y,                             // maximum y border of screen
+      x;                             // maximum x border of screen
+  std::vector<HighScore> highScores; // high score vector
+  loadHighScores(highScores);
 
-    // creating variables before the game loop
-    bool continueRound;         // player hasn't lost current round
-    char c;                     // input char?
-    int playGame = 0,           // play again
-        direction,              // direction the snake is headed in
-        score,                  // score of the current round
-        selected,               // selected option at end screen (yes/no)
-        y,                      // maximum y border of screen
-        x;                      // maximum x border of screen
+  // game loop
+  do {
+
+    // set all of the ncurses stuff
+    initGameScreen();
+
+    // set window size
+    WINDOW *w;
+
+    // initialize score, c, direction, max y, and max x to default values and
+    // load high scores
+    initGameVars(continueRound, c, score, direction, selected, y, x, stdscr);
+
+    // set default snake coord values (x,y in middle)
+    dot d;
+    d.y = y / 2 - 1;
+    d.x = x / 2 - 1;
+    d.icon = SNAKE_PIECE;
+
+    // setup snake (Queue)
+    std::queue<dot> snakeQ;
+    snakeQ.push(d);
+
+    // create and print default apple
+    dot apple;
+    apple.icon = APPLE_PIECE;
+    moveApple(apple, y, x);
+
+    // initially move the cursor
+    move(d.y, d.x);
 
     // game loop
     do {
+      // draw the apple
+      drawDot(apple);
 
-        // set all of the ncurses stuff
-        initGameScreen();
+      // draw the border
+      box(stdscr, 0, 0);
 
-        // set window size
-        WINDOW *w;
+      // draw score
+      move(0, 2);
+      printw("Score: %d", score);
 
-        // initialize score, c, direction, max y, and max x to default values
-        initGameVars(continueRound, c, score, direction, selected, y, x, stdscr);
+      // refresh the screen
+      refresh();
 
-        // set default snake coord values (x,y in middle)
-        dot d;
-        d.y = y/2-1;
-        d.x = x/2-1;
-        d.icon = SNAKE_PIECE;
+      // delay between game loops (how fast the snake moves)
+      std::this_thread::sleep_for(
+          std::chrono::milliseconds(INTERVAL + delay[direction]));
 
-        // setup snake (Queue)
-        std::queue<dot> snakeQ;
-        snakeQ.push(d);
+      // change direction based on input, nodelay(), stops the blocking
+      changeDirection(getch(), direction);
 
-        // create and print default apple
-        dot apple;
-        apple.icon = APPLE_PIECE;
+      // check for apple hit
+      if (snakeQ.back().x == apple.x && snakeQ.back().y == apple.y) {
+
+        // iterate score
+        score++;
+
+        // get new dot to be head
+        dot newDot;
+
+        // pupt new head dot at current head
+        newDot.y = snakeQ.back().y;
+        newDot.x = snakeQ.back().x;
+        newDot.icon = SNAKE_PIECE;
+
+        // move new head in the right direction
+        moveDot(direction, newDot, x, y);
+
+        // push the new head into the queue
+        snakeQ.push(newDot);
+
+        // draw the new snake
+        drawSnake(snakeQ);
+
+        // move the apple somewhere else
         moveApple(apple, y, x);
 
-        // initially move the cursor
-        move(d.y,d.x);
+        // don't let the apple spawn in the snake
+        while (mvinch(apple.y, apple.x) == SNAKE_PIECE)
+          moveApple(apple, y, x);
 
-        // game loop
-        do {
-            // draw the apple
-            drawDot(apple);
+      } else {
+        // create the new head dot
+        dot newDot, prevDot;
 
-            // draw the border
-            box(stdscr,0,0);
+        prevDot.y = snakeQ.back().y;
+        prevDot.x = snakeQ.back().x;
 
-            // draw score
-            move(0,2);
-            printw("Score: %d", score);
+        // put new head dot at current head
+        newDot.y = snakeQ.back().y;
+        newDot.x = snakeQ.back().x;
+        newDot.icon = SNAKE_PIECE;
 
-            // refresh the screen
-            refresh();
+        // move the new head in the right direction
+        moveDot(direction, newDot, x, y);
 
-            // delay between game loops (how fast the snake moves)
-            std::this_thread::sleep_for(std::chrono::milliseconds(INTERVAL+delay[direction]));
+        // if snake head is moving to a place in which a snake piece already
+        // exists
+        if (newDot.x == prevDot.x && newDot.y == prevDot.y) {
+          continueRound = false;
+          continue;
+        } else if (mvinch(newDot.y, newDot.x) == SNAKE_PIECE) {
+          continueRound = false;
+          continue;
+        }
 
-            // change direction based on input, nodelay(), stops the blocking
-            changeDirection(getch(), direction);
+        // move to the tail of the snake
+        move(snakeQ.front().y, snakeQ.front().x);
 
-            // check for apple hit
-            if(snakeQ.back().x == apple.x && snakeQ.back().y == apple.y){
+        // clear the tail space
+        addch(' ');
 
-                // iterate score
-                score++;
+        // push the new head dot to the queue
+        snakeQ.push(newDot);
 
-                // get new dot to be head
-                dot newDot;
+        // pop the tail dot
+        snakeQ.pop();
 
-                // pupt new head dot at current head
-                newDot.y = snakeQ.back().y;
-                newDot.x = snakeQ.back().x;
-                newDot.icon = SNAKE_PIECE;
+        // draw the new part of the snake
+        drawDot(snakeQ.back());
+      }
 
-                // move new head in the right direction
-                moveDot(direction, newDot, x, y);
+      // if out of bounds, end game
 
-                // push the new head into the queue
-                snakeQ.push(newDot);
+    } while (continueRound);
 
-                // draw the new snake
-                drawSnake(snakeQ);
+    // clear the screen
+    clear();
+    refresh();
 
-                // move the apple somewhere else
-                moveApple(apple, y, x);
+    // allow user to put in name for high score
+    if (highScores.size() < 10 || score > highScores.back().score) {
+      move((y / 2 - 1), (x / 2 - 11));
+      printw("Congratulations, you got a high score!");
 
-                // don't let the apple spawn in the snake
-                while(mvinch(apple.y,apple.x) == SNAKE_PIECE)
-                    moveApple(apple,y,x);
+      move(y / 2, x / 2 - 5);
+      printw("Enter Player Name: ");
 
-            }
-            else {
-                // create the new head dot
-                dot newDot, prevDot;
+      refresh();
 
-                prevDot.y = snakeQ.back().y;
-                prevDot.x = snakeQ.back().x;
+      std::string playerName;
 
-                // put new head dot at current head
-                newDot.y = snakeQ.back().y;
-                newDot.x = snakeQ.back().x;
-                newDot.icon = SNAKE_PIECE;
+      nodelay(stdscr, false);
+      char ch;
+      curs_set(true);
+      while ((ch = getch()) != '\n') {
+        playerName.push_back(ch);
+        addch(ch);
+        refresh();
+      }
 
-                // move the new head in the right direction
-                moveDot(direction, newDot, x,  y);
+      addCurrentScore(HighScore{playerName, score}, highScores);
+      curs_set(false);
 
-                // if snake head is moving to a place in which a snake piece already exists
-                if (newDot.x == prevDot.x && newDot.y == prevDot.y){
-                    continueRound = false;
-                    continue;
-                }
-                else if (mvinch(newDot.y, newDot.x) == SNAKE_PIECE){
-                    continueRound = false;
-                    continue;
-                }
+      // stop showing cursor
+      noecho();
+    }
 
-                // move to the tail of the snake
-                move(snakeQ.front().y, snakeQ.front().x);
+    // print the end game screen
+    // move to middle of the screen
+    clear();
+    move(y / 2 - 1, x / 2 - 5);
 
-                // clear the tail space
-                addch(' ');
+    // print message
+    printw("Game Over");
 
-                // push the new head dot to the queue
-                snakeQ.push(newDot);
+    // move right below game over message and print the score
+    move(y / 2, x / 2 - 5);
+    printw("Score: %d", score);
 
-                // pop the tail dot
-                snakeQ.pop();
+    // move below score and ask user if they want to play again
+    move(y / 2 + 3, x / 2 - 6);
+    printw("Play again?");
 
-                // draw the new part of the snake
-                drawDot(snakeQ.back());
+    // game loop value
+    bool gameOverLoop = true;
 
-            }
+    // game over menu loop
+    nodelay(stdscr, false);
 
-            // if out of bounds, end game
+    // move and print yes entry under play again to left
+    move(y / 2 + 4, x / 2 - 5);
+    printw("Yes");
 
-        } while (continueRound);
+    // move and print no entry unter 'Play again?' to right
+    move(y / 2 + 4, x / 2 + 1);
+    printw("No");
 
-        // clear the screen
-        clear();
+    // print current high scores
+    int row = 0;
+    move(row++, 0);
+    printw("High Scores:");
+    move(row++, 0);
+    printw("Name\tScore");
 
-        // print the end game screen
-        // move to middle of the screen
-        move(y/2-1, x/2-5);
+    for (const HighScore &s : highScores) {
+      move(row++, 0);
+      printw("%s: %d", s.playerName.c_str(), s.score);
+    }
 
-        // print message
-        printw("Game Over");
+    do {
 
-        // move right below game over message and print the score
-        move(y/2, x/2-5);
-        printw("Score: %d", score);
+      // if first element is selected, draw it with background color
+      // move to where to put the arrow
+      move(y / 2 + 4, x / 2 - 7);
+      (playGame == 0) ? printw("->") : printw("  ");
 
-        // move below score and ask user if they want to play again
-        move(y/2+3, x/2-6);
-        printw("Play again?");
+      // if second element is selected, draw it with background color
+      // move to where the arrow would be
+      move(y / 2 + 4, x / 2 - 1);
+      (playGame == 1) ? printw("->") : printw("  ");
 
-        // game loop value
-        bool gameOverLoop = true;
+      // reload screen with message
+      refresh();
 
-        // game over menu loop
-        do {
-            nodelay(stdscr, false);
+      // get user input from game over screen
+      selected = getch();
 
-            // if first element is selected, draw it with background color
-            // move to where to put the arrow
-            move(y/2+4, x/2-7);
-            ( playGame == 0) ? printw("->"):printw("  ");
+      // switch case on user input
+      switch (selected) {
+      // upon left press key select yes
+      case KEY_LEFT:
+        playGame = 0;
+        break;
+      // upon right key press select no
+      case KEY_RIGHT:
+        playGame = 1;
+        break;
+      // upon pressing enter confirm choice by exiting the loop
+      case 10:
+        gameOverLoop = false;
+        break;
+      }
 
-            // move and print yes entry under play again to left
-            move (y/2+4, x/2-5);
-            printw("Yes");
+      // wait for user input
+    } while (gameOverLoop);
 
-            // if second element is selected, draw it with background color
-            // move to where the arrow would be
-            move(y/2+4, x/2-1);
-            (playGame == 1) ? printw("->"): printw("  ");
+    // end window after game is over
 
-            // move and print no entry unter 'Play again?' to right
-            move (y/2+4, x/2+1);
-            printw("No");
+  } while (playGame == 0);
 
-            // reload screen with message
-            refresh();
+  saveHighScores(highScores);
 
-            // get user input from game over screen
-            selected = getch();
+  endwin();
 
-            // switch case on user input
-            switch(selected) {
-                // upon left press key select yes
-                case KEY_LEFT:
-                    playGame = 0;
-                    break;
-                // upon right key press select no
-                case KEY_RIGHT:
-                    playGame = 1;
-                    break;
-                // upon pressing enter confirm choice by exiting the loop
-                case 10:
-                    gameOverLoop = false;
-                    break;
-            }
-
-            // wait for user input
-        } while (gameOverLoop);
-
-        // end window after game is over
-
-    } while(playGame == 0);
-
-    endwin();
-
-    return 0;
+  return 0;
 }

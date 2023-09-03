@@ -53,6 +53,4 @@ void moveDot(int direction, dot &d, int x, int y);
 
 void drawDot(dot d);
 
-void drawSnake(std::queue<dot> snkQ);
-
 void moveApple(dot &a, int maxY, int maxX);

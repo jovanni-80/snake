@@ -121,16 +121,6 @@ void drawDot(dot d) {
   addch(d.icon);
 }
 
-// draw the entire snake current workaround for eating the apple
-void drawSnake(std::queue<dot> snkQ) {
-  std::queue<dot> temp = snkQ;
-
-  while (!temp.empty()) {
-    drawDot(temp.front());
-    temp.pop();
-  }
-}
-
 // move the apple to a random location
 void moveApple(dot &a, int maxY, int maxX) {
   a.x = rand() % (maxX - 2) + 1;

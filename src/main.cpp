@@ -102,10 +102,13 @@ int main(int argc, char **argv) {
         moveDot(direction, newDot, x, y);
 
         // push the new head into the queue
+        dot oldHead = snakeQ.back();
         snakeQ.push(newDot);
 
         // draw the new snake
-        drawSnake(snakeQ);
+        drawDot(snakeQ.back());
+        drawDot(oldHead); // if you don't draw the old head, the snake has an x
+                          // (apple) running through it
 
         // move the apple somewhere else
         moveApple(apple, y, x);

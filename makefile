@@ -1,7 +1,7 @@
-run: ncsnake
+run: build
 	./ncsnake
 
-ncsnake: main.o snake.o
+build: main.o snake.o
 	g++ main.o snake.o -o ncsnake -lncurses
 
 main.o: src/main.cpp src/snake.h
